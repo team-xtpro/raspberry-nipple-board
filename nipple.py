@@ -36,9 +36,22 @@ def isr_falling(channel):
 def get_button(pin):
     # Define which button is connected to which pin
     buttons = {
-        16: 0
+        2: 0,
+        3: 1,
+        4: 2,
+        17: 3,
+        27: 4,
+        22: 5,
+        10: 6,
+        9: 7,
+        11: 8,
+        0: 9,
+        5: 10,
+        6: 11,
+        13: 12,
+        19: 13,
+        26: 14,
     }
-    # TODO #2 Setup other buttons/pins
 
     return buttons.get(pin)
 
