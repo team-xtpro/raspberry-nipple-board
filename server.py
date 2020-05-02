@@ -6,6 +6,8 @@ import RPi.GPIO as GPIO
 import pygame
 from os import listdir
 from os.path import isfile, join
+from werkzeug.utils import secure_filename
+import os
 
 buttons = {
     18: "0",
@@ -25,7 +27,11 @@ buttons = {
     26: "14",
 }
 
+UPLOAD_FOLDER = './sound'
+ALLOWED_EXTENSIONS = {'wav', 'mp3'}
+
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 sound_files = {
     "0": "dumm.wav",
@@ -113,6 +119,22 @@ def play(pin):
     print("Playing sound file " + str(sound_file))
     pygame.mixer.music.play(0)
 
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/sound', methods=["POST"])
+def upload_sound():
+    if 'file' not in request.files:
+        return "'file' not in request.files"
+    file = request.files['file']
+    if file.filename == '':
+        return "Empty filename is not allowed"
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return "File uploaded!"
 
 @app.route('/sounds', methods=["GET"])
 def get_sounds():
